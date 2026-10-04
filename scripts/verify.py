@@ -20,7 +20,8 @@ def check(condition, message):
 def verify():
     actual = {p.relative_to(ROOT).as_posix() for p in ROOT.rglob('*')
               if p.is_file() and '.git' not in p.relative_to(ROOT).parts
-              and '__pycache__' not in p.relative_to(ROOT).parts}
+              and '__pycache__' not in p.relative_to(ROOT).parts
+              and 'dist' not in p.relative_to(ROOT).parts}
     check(actual == EXPECTED, f'Unexpected/missing package files: {sorted(actual ^ EXPECTED)}')
     skill = (ROOT / 'SKILL.md').read_text(encoding='utf-8')
     front = re.match(r'^---\n(.*?)\n---\n', skill, re.S)
