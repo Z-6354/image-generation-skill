@@ -14,11 +14,15 @@
 
 | 参数 | 必需 | 服务当前支持的含义 |
 | --- | --- | --- |
-| `prompt` | 是 | 中文或英文的详细生图/改图要求 |
+| `prompt` | 是* | 单条生图/改图要求（*若使用非空 `prompts` 则可与之配合） |
+| `prompts` | 否 | 多条不同提示（1–4）；服务端批量并行时使用；有则优先于多次 tools/call |
+| `n` | 否 | 同一 `prompt` 生成张数（1–4）；与多条 `prompts` 同时出现时以 `prompts` 为准 |
 | `model` | 否 | 服务忽略该值，固定 gpt-6-luna；推荐省略 |
 | `images` | 否 | 参考图数组：data URI/base64 字符串，或 `{data, mimeType}` / `{path}` 对象 |
-| `image` | 否 | 单张参考图，同 images 的元素类型 |
-| `image_path` | 否 | MCP 服务器本机图片路径或其支持的 sha256 标识；不是客户端本机路径 |
+| `image` | 否 | 单张参考图，同 images 的元素类型；勿与 `images` 重复传同一文件 |
+| `image_path` | 否 | MCP 服务器本机图片路径或其支持的 sha256 标识；不是远程客户端本机路径 |
+
+`n` / `prompts` 仅在当次 schema 公布时使用。未公布时不要假装批量已生效，改为串行单张调用。
 
 `images` / `image` / `image_path` 仅在当次可见工具定义中存在时传入；选择一种输入形式即可。size、quality 自动处理，没有可直接设置的参数。
 
@@ -62,12 +66,14 @@
 | DSH 同名 namespace 错误 | 多个生效层重复注册了 codex-image；只保留真实活动入口，不重复安装 |
 | size / quality 参数错误 | 删除未在当次 schema 公布的参数，将画面需求写进 prompt |
 | 参考图找不到 | 客户端路径不在 VPS 上；改用 schema 支持的 data URI/base64，不上传无关文件 |
+| `ENOENT ... realpath '/home/.../attachments/...'` 或 `C:\...` | Harness 与 MCP 不同机却传了本地路径。远程客户端必须 data URI；或在该 Harness 本机架路径内联桥。本台腾讯云桥仅覆盖本机，**新挂的 Harness 不会自动继承** |
 | model 参数错误 | 不传 DeepSeek/Sol；通常省略 model，服务固定 gpt-6-luna |
-| 超时 | 当前 DSH 示例为 180 秒；先查是否已有结果，必要时有依据地调整客户端超时；不要自动重复生成 |
+| 超时 | 当前 DSH 示例为 180 秒；批量 `n`/`prompts` 时服务端应放大超时。先查是否已有结果，不要自动重复生成 |
 | 有图片但看不到预览 | 检查真实图片请求、HTTP 状态和解码；不要仅依据附件无扩展名重新生成 |
+| 多图很慢/很卡 | 多半是多次 tools/call 被串行。应改用一次 call 的 `n` 或 `prompts[]`（见 [server-mcp-changes.md](server-mcp-changes.md)）；低配机不要强开 MCP parallel |
 
 不需要为了配置验证而发起生成请求。离线结构检查不等于远程调用测试，工具发现不等于图片已生成。
 
 ## 非目标
 
-本包不包含远程 MCP 的部署代码、模型权重、平台访问令牌，也不依赖旧 wannian-luna-image 的本地 Python 程序。服务可用性、价格、访问权限和兼容客户端版本由各自提供方决定。
+本包不包含远程 MCP 的部署代码、模型权重、平台访问令牌，也不依赖旧 wannian-luna-image 的本地 Python 程序。服务可用性、价格、访问权限和兼容客户端版本由各自提供方决定。远程服务改批量参数的清单见 [server-mcp-changes.md](server-mcp-changes.md)。

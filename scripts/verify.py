@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = {
     'SKILL.md', 'README.md', 'LICENSE', '.gitignore',
-    'references/setup.md', 'references/mcp.md',
+    'references/setup.md', 'references/mcp.md', 'references/server-mcp-changes.md',
     'mcp/mcp.example.json', 'mcp/dsh.cordis.patch.example.yml',
     'scripts/verify.py',
 }
@@ -33,7 +33,6 @@ def verify():
     for relative in sorted(EXPECTED):
         path = ROOT / relative
         text = path.read_text(encoding='utf-8')
-        # Error messages never include matched secrets.
         check(not re.search(r'(?:sk-[A-Za-z0-9]{16,}|gh[pousr]_[A-Za-z0-9]{20,})', text),
               f'Possible credential in {relative}')
         if relative != 'scripts/verify.py':
@@ -62,7 +61,8 @@ def verify():
                   'toolCallTimeoutMs: 180000', '@deepseek-ai/dsh-mcp-client', server['url']]:
         check(field in yaml, f'DSH template missing {field}')
     for policy in ['直接调用', '不要重装', '当前工具 schema', 'SHA-256', '内联预览',
-                   '不主动生成付费测试图片', '超时不代表服务端未执行', '只看图']:
+                   '不主动生成付费测试图片', '超时不代表服务端未执行', '只看图',
+                   '挂其他 Harness', 'prompts']:
         check(policy in skill, f'Workflow constraint missing: {policy}')
     print(f'PASS: {len(EXPECTED)} files; frontmatter, links, templates, '
           'credential scan and first-use/reuse/delivery rules verified offline.')

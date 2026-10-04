@@ -50,7 +50,9 @@ Agent 会检查工具：
 
 > 使用 codex-image Skill，生成一张透明背景的 Minecraft 青绿色灵石物品图标，并提供预览和原图文件。
 
-Agent 会直接调用 MCP，并分别验证生成、文件提供和预览。宿主固定 `gpt-6-luna`、生图后端 `gpt-image-2-codex`；不跟随聊天模型切换。参考图能力受当前客户端暴露的参数限制，远程 MCP 不能读取用户本机 Windows 路径。
+多图时优先一次工具调用：同提示用 `n`，不同文案/构图用 `prompts[]`（需远程 MCP 已实现，见 [references/server-mcp-changes.md](references/server-mcp-changes.md)）。不要靠并行多次 `generate_image` 加速——多数 DSH 会对 MCP 工具串行，低配机还会更卡。
+
+Agent 会直接调用 MCP，并分别验证生成、文件提供和预览。宿主固定 `gpt-6-luna`、生图后端 `gpt-image-2-codex`；不跟随聊天模型切换。参考图能力受当前客户端暴露的参数限制；**远程 MCP 不能读取客户端本机路径**（Windows `C:\` 或异机 Linux 附件路径都会 `realpath` ENOENT），应传 data URI，或在该 Harness 本机架路径内联桥。
 
 ## 包内容
 
@@ -59,6 +61,7 @@ Agent 会直接调用 MCP，并分别验证生成、文件提供和预览。宿�
 | [SKILL.md](SKILL.md) | 触发条件、按需接入、生图与交付规则 |
 | [references/setup.md](references/setup.md) | DSH、Cursor 及其他客户端首次接入与卸载 |
 | [references/mcp.md](references/mcp.md) | 已核对的工具参数、参考图与故障排查 |
+| [references/server-mcp-changes.md](references/server-mcp-changes.md) | 远程 MCP 批量 `n` / `prompts[]` 修改清单 |
 | [mcp/dsh.cordis.patch.example.yml](mcp/dsh.cordis.patch.example.yml) | DSH 脱敏连接模板 |
 | [mcp/mcp.example.json](mcp/mcp.example.json) | 支持 mcpServers URL 的客户端模板 |
 | [scripts/verify.py](scripts/verify.py) | 无网络、无生图费用的结构/泄密检查 |

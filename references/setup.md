@@ -73,6 +73,17 @@
 
 以上只确认 MCP 接入，不证明生图、预览或保存已成功；这些在用户真实请求中分别验证。
 
+## 挂其他 Harness 时的路径坑（必读）
+
+直连远程 MCP（`https://vps.wannian.fun/codex-image-mcp/mcp`）时，**不要**把该 Harness 本机的附件路径传给 `images` / `image` / `image_path`，否则会 `realpath` ENOENT。默认用 data URI。
+
+仅当满足其一才可传本地路径：
+
+1. MCP 进程与附件在同一台机器；或
+2. 该 Harness **本机**已部署类似 `codex-image-bridge`（路径 → data URI）并把 profile 指到桥。
+
+腾讯云这台 DSH 的 `127.0.0.1:3093` 桥 **只服务本机**；新 Windows / 新云机 / 新 profile **不会自动带上**，接入时要单独说明或再架桥。
+
 ## 卸载
 
 删除所安装的 Skill 文件夹；从客户端活动配置删除对应的单个 MCP 条目，再刷新。保留其他 MCP 服务和配置。使用前备份用于恢复，不删除整个配置文件。
