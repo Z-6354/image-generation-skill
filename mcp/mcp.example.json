@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "codex-image": {
+      "url": "https://vps.wannian.fun/codex-image-mcp/mcp",
+      "headers": {
+        "Authorization": "Bearer REPLACE_WITH_YOUR_TOKEN"
+      }
+    }
+  }
+}

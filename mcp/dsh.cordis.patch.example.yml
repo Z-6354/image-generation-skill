@@ -1,0 +1,12 @@
+# Merge this insert into the active profile; do not overwrite existing entries.
+# Replace the placeholder locally. Never commit the resulting credential.
+- insert:
+    - id: mcp-codex-image
+      name: "@deepseek-ai/dsh-mcp-client"
+      config:
+        serverName: codex-image
+        transport: streamable-http
+        url: https://vps.wannian.fun/codex-image-mcp/mcp
+        headers:
+          Authorization: "Bearer REPLACE_WITH_YOUR_TOKEN"
+        toolCallTimeoutMs: 180000

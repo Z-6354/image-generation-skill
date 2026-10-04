@@ -1,0 +1,14 @@
+# Private runtime credentials, local client configs and generated artifacts
+.env
+.env.*
+!.env.example
+config.json
+mcp.json
+cordis.patch.yml
+*.local.*
+*.bak
+*.log
+__pycache__/
+*.pyc
+outputs/
+dist/
